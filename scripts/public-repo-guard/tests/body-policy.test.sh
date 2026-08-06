@@ -57,6 +57,12 @@ expect 1 'internal-only marker' \
 AKID_FIXTURE="AKI""A1234567890ABCDEF"
 expect 1 'AWS access key id' \
   "The failing job had ${AKID_FIXTURE} configured."
+# Regression: the ABOUT_THE_CONTROL exemption used to apply to EVERY rule, so a
+# live key pasted while discussing the gate — the common shape of "the guard
+# blocked me, help?" — was reported clean. Naming the scanner must never exempt
+# a hard credential format.
+expect 1 'credential on a line naming the gate still blocks' \
+  "The public-repo-guard job failed on ${AKID_FIXTURE} in the config, help?"
 expect 1 'internal tailscale IP' \
   'It resolves to 100.71.4.19 from inside the fleet.'
 
@@ -71,6 +77,8 @@ expect 0 'public runner path is not an operator path' \
   'CI checks out to /home/runner/work/repo/repo before the scan runs.'  # enforce-ignore (fixture)
 expect 0 'talking about the control' \
   'body-policy blocks a private repo named next to a SECRET_TOKEN; that is intended.'
+expect 0 'discussing the gate with a real private-repo name stays exempt' \
+  'public-repo-guard fires when wave-gateway appears near EXAMPLE_SECRET; working as intended.'
 expect 0 'explicit guard:allow with a reason' \
   'Example for the docs: wave-gateway holds EXAMPLE_SECRET — guard:allow documented-example'
 expect 0 'ordinary clean body' \
