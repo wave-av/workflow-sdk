@@ -46,6 +46,8 @@ expect 1 'private repo + secret count' \
   'wave-gateway went from 74 secrets to 75 after this change.'
 expect 1 'private repo + service binding' \
   'This adds a service binding from the worker to agent-money for settlement.'
+expect 1 'private repo + capitalized prose detail still blocks' \
+  'Wrangler secret list for wave-gateway is attached below.'
 expect 1 'operator home path' \
   'Repro: run it from /Users/someoperator/Documents/notes and it fails.'  # enforce-ignore (fixture)
 expect 1 'internal-only marker' \
@@ -73,6 +75,10 @@ expect 0 'two private repos, no operational detail' \
   'Both wave-gateway and wave-transports will need a follow-up for this.'
 expect 0 'credential NAME with no private repo nearby' \
   'The handler now reads SOME_API_TOKEN from the environment instead of a literal.'
+# Regression: a global (?i) on the proximity pattern let lowercase everyday words
+# (openai_key, primary_key) satisfy the SCREAMING_CASE credential-name branch.
+expect 0 'lowercase key-ish word near a private repo is not operational detail' \
+  'wave-gateway reads the openai_key from wrangler.toml at startup.'
 expect 0 'public runner path is not an operator path' \
   'CI checks out to /home/runner/work/repo/repo before the scan runs.'  # enforce-ignore (fixture)
 expect 0 'talking about the control' \
