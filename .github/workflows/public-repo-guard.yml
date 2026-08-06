@@ -35,6 +35,13 @@ on:
     types: [opened, edited]
   issue_comment:
     types: [created, edited]
+  # Review submissions and inline review comments are just as world-readable as
+  # issue comments; `issue_comment` does NOT cover them, so without these two
+  # triggers a review body would be the one surface nothing ever scanned.
+  pull_request_review:
+    types: [submitted, edited]
+  pull_request_review_comment:
+    types: [created, edited]
   push:
     branches: [main, master]
   workflow_dispatch:
@@ -106,8 +113,8 @@ jobs:
         run: bash scripts/public-repo-guard/tests/body-policy.test.sh
 
   # The other half of a public repo's surface. `guard` above scans the published
-  # TREE; a PR/issue/comment BODY is just as world-readable and, until this job,
-  # was scanned by nothing server-side. That gap was real, not theoretical: a PR
+  # TREE; a PR/issue/comment/review BODY is just as world-readable and, until this
+  # job, was scanned by nothing server-side. That gap was real, not theoretical: a PR
   # was blocked for naming a private repo in wrangler.toml while the very same
   # name, with more operational detail attached, sat unchallenged in its body.
   #
@@ -117,7 +124,12 @@ jobs:
   # can stop that class before publication.
   body-guard:
     name: Body content policy
-    if: github.event_name == 'pull_request' || github.event_name == 'issues' || github.event_name == 'issue_comment'
+    if: >-
+      github.event_name == 'pull_request'
+      || github.event_name == 'issues'
+      || github.event_name == 'issue_comment'
+      || github.event_name == 'pull_request_review'
+      || github.event_name == 'pull_request_review_comment'
     concurrency:
       # Keyed on the specific PR / comment / issue rather than github.ref, because
       # issue events all report the default branch and a ref-keyed group would let
@@ -160,12 +172,13 @@ jobs:
           fi
           jq -r '[.pull_request.title, .pull_request.body,
                   .issue.title, .issue.body,
+                  .review.body,
                   .comment.body]
                  | map(select(. != null)) | join("\n")' \
             "$GITHUB_EVENT_PATH" > "$RUNNER_TEMP/bodyscan/body.txt"
           echo "scanning $(wc -l < "$RUNNER_TEMP/bodyscan/body.txt") line(s) of body text"
 
-      - name: body policy (PR / issue / comment text)
+      - name: body policy (PR / issue / comment / review text)
         env:
           GUARD_PRIVATE_REPOS: ${{ vars.GUARD_PRIVATE_REPOS }}
         run: bash scripts/public-repo-guard/body-policy.sh "$RUNNER_TEMP/bodyscan/body.txt"
