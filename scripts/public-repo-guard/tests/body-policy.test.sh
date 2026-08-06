@@ -14,8 +14,9 @@ TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
 # The names the real gate is configured with come from an org variable; the tests
-# pin their own so they are hermetic and do not depend on CI configuration.
-export GUARD_PRIVATE_REPOS="wave-gateway, wave-transports, agent-money"
+# pin their own FICTITIOUS names so they are hermetic and never republish a real
+# private repo name into this public tree.
+export GUARD_PRIVATE_REPOS="acme-gateway, acme-transports, acme-money"
 
 PASS=0; FAIL=0
 
@@ -39,15 +40,15 @@ echo "body-policy fixtures"
 
 # --- must BLOCK ---------------------------------------------------------------
 expect 1 'private repo + credential name' \
-  'Flip is live: WAVE_VIEWPORT_LEASE_SECRET is bound on wave-gateway now.'
+  'Flip is live: WAVE_VIEWPORT_LEASE_SECRET is bound on acme-gateway now.'
 expect 1 'private repo + credential name, reverse order' \
-  'The MOQ_JOIN_SECRET was added; wave-transports picks it up on deploy.'
+  'The MOQ_JOIN_SECRET was added; acme-transports picks it up on deploy.'
 expect 1 'private repo + secret count' \
-  'wave-gateway went from 74 secrets to 75 after this change.'
+  'acme-gateway went from 74 secrets to 75 after this change.'
 expect 1 'private repo + service binding' \
-  'This adds a service binding from the worker to agent-money for settlement.'
+  'This adds a service binding from the worker to acme-money for settlement.'
 expect 1 'private repo + capitalized prose detail still blocks' \
-  'Wrangler secret list for wave-gateway is attached below.'
+  'Wrangler secret list for acme-gateway is attached below.'
 expect 1 'operator home path' \
   'Repro: run it from /Users/someoperator/Documents/notes and it fails.'  # enforce-ignore (fixture)
 expect 1 'internal-only marker' \
@@ -70,23 +71,23 @@ expect 1 'internal tailscale IP' \
 
 # --- must PASS (precision — these keep the gate deployable) -------------------
 expect 0 'bare private-repo cross-reference' \
-  'This is the companion change to wave-transports#260; merge that one first.'
+  'This is the companion change to acme-transports#260; merge that one first.'
 expect 0 'two private repos, no operational detail' \
-  'Both wave-gateway and wave-transports will need a follow-up for this.'
+  'Both acme-gateway and acme-transports will need a follow-up for this.'
 expect 0 'credential NAME with no private repo nearby' \
   'The handler now reads SOME_API_TOKEN from the environment instead of a literal.'
 # Regression: a global (?i) on the proximity pattern let lowercase everyday words
 # (openai_key, primary_key) satisfy the SCREAMING_CASE credential-name branch.
 expect 0 'lowercase key-ish word near a private repo is not operational detail' \
-  'wave-gateway reads the openai_key from wrangler.toml at startup.'
+  'acme-gateway reads the openai_key from wrangler.toml at startup.'
 expect 0 'public runner path is not an operator path' \
   'CI checks out to /home/runner/work/repo/repo before the scan runs.'  # enforce-ignore (fixture)
 expect 0 'talking about the control' \
   'body-policy blocks a private repo named next to a SECRET_TOKEN; that is intended.'
 expect 0 'discussing the gate with a real private-repo name stays exempt' \
-  'public-repo-guard fires when wave-gateway appears near EXAMPLE_SECRET; working as intended.'
+  'public-repo-guard fires when acme-gateway appears near EXAMPLE_SECRET; working as intended.'
 expect 0 'explicit guard:allow with a reason' \
-  'Example for the docs: wave-gateway holds EXAMPLE_SECRET — guard:allow documented-example'
+  'Example for the docs: acme-gateway holds EXAMPLE_SECRET — guard:allow documented-example'
 expect 0 'ordinary clean body' \
   'Bumps the draft revision and regenerates the fixtures. No behaviour change.'
 # Regression: the first CI run of this job failed on its own PR, because a review
