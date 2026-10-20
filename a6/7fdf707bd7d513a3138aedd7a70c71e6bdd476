@@ -1,0 +1,14 @@
+.github/workflows/issue-ops-triage.yml
+  h_af5ac1a9798224 14,19-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "a67fdf707bd7d513a3138aedd7a70c71e6bdd476",
+  "prompts": {},
+  "humans": {
+    "h_af5ac1a9798224": {
+      "author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
