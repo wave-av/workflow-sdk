@@ -5,3 +5,7 @@ All notable changes to this project are documented here. The format is based on
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Security
+
+- Detect Slack incoming webhook URLs and GitHub OAuth/App/refresh plus GitLab PAT shapes in the foundation secret-scan, including lockfiles that the inherited gitleaks default path allowlist skips.

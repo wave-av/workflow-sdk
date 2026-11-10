@@ -13,6 +13,10 @@
 title = "WAVE public-repo gitleaks config"
 
 [extend]
+# Inherits default credential rules AND default path skips. Those skips include
+# package-lock.json, yarn.lock, pnpm-lock.yaml, deno.lock, and go.sum. Do not
+# treat lockfiles as secret-scan free zones: foundation-secret-scan.sh covers
+# the token families gitleaks would miss there.
 useDefault = true
 
 [allowlist]

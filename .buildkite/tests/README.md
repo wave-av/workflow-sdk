@@ -2,6 +2,10 @@
 
 Run from the repo root, no repo dependencies:
 
+- Lockfile secret-scan coverage: `bash .buildkite/tests/foundation-secret-scan-lockfiles.sh`
+  (needs bash; plants stand-in tokens in a temp tree and asserts the extra-step
+  scanner fails closed on package-lock.json, yarn.lock, pnpm-lock.yaml, deno.lock,
+  and go.sum)
 - S1 fork refusal: `bats .buildkite/tests/guard-content-policy-fork.bats`
   (needs bats; rg optional — without rg the positive controls assert the
   script reaches the rg-missing fail-closed branch instead of the scan)
